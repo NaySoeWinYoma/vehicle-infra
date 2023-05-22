@@ -6,3 +6,4 @@ terraform.dev.tfvars
 backend.tf
 *.tfstate
 *.tfstate.backup
+*.p8

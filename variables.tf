@@ -39,12 +39,12 @@ variable "facebook" {
   description = "Facebook Client ID"
 }
 
-# variable "apple" {
-#   type = object({
-#     client_id   = string
-#     team_id     = string
-#     key_id      = string
-#     private_key = string
-#   })
-#   description = "Apple Client ID"
-# }
+variable "apple" {
+  type = object({
+    client_id = string
+    team_id   = string
+    key_id    = string
+    # private_key = string
+  })
+  description = "Apple Client ID"
+}

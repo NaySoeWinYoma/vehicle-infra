@@ -18,11 +18,11 @@ resource "aws_cognito_user_pool" "default" {
   }
 
   schema {
-    attribute_data_type = "String"
+    attribute_data_type      = "String"
     developer_only_attribute = false
-    mutable             = true
-    name                = "name"
-    required            = true
+    mutable                  = true
+    name                     = "name"
+    required                 = true
     string_attribute_constraints {
       max_length = "2048"
       min_length = "1"
@@ -58,9 +58,15 @@ resource "aws_cognito_user_pool_client" "vehicle_admin" {
   explicit_auth_flows          = ["ALLOW_REFRESH_TOKEN_AUTH", "ALLOW_USER_SRP_AUTH"]
   allowed_oauth_scopes         = ["email", "openid", "profile", "aws.cognito.signin.user.admin"]
   allowed_oauth_flows          = ["code"]
-  supported_identity_providers = ["COGNITO"]
+  supported_identity_providers = ["COGNITO", "Google", "Facebook", "SignInWithApple"]
   callback_urls                = var.client_callback_urls
   logout_urls                  = var.client_logout_urls
+
+  depends_on = [
+    aws_cognito_identity_provider.google,
+    aws_cognito_identity_provider.facebook,
+    aws_cognito_identity_provider.apple
+  ]
 }
 
 # domain
@@ -72,7 +78,7 @@ resource "aws_cognito_user_pool_domain" "default" {
 # resource server
 resource "aws_cognito_resource_server" "default" {
   identifier = var.resource_server_identifier
-  name       = "example"
+  name       = "vehicle_api"
 
   user_pool_id = aws_cognito_user_pool.default.id
 
@@ -132,22 +138,23 @@ resource "aws_cognito_identity_provider" "facebook" {
 }
 
 # SignInWithApple
-# resource "aws_cognito_identity_provider" "apple" {
-#   user_pool_id  = aws_cognito_user_pool.default.id
-#   provider_name = "SignInWithApple"
-#   provider_type = "SignInWithApple"
+resource "aws_cognito_identity_provider" "apple" {
+  user_pool_id  = aws_cognito_user_pool.default.id
+  provider_name = "SignInWithApple"
+  provider_type = "SignInWithApple"
 
-#   provider_details = {
-#     client_id        = var.apple.client_id
-#     team_id          = var.apple.team_id
-#     key_id           = var.apple.key_id
-#     private_key      = var.apple.private_key
-#     authorize_scopes = "email name"
-#   }
+  provider_details = {
+    client_id        = var.apple.client_id
+    team_id          = var.apple.team_id
+    key_id           = var.apple.key_id
+    private_key      = file("AuthKey_43PD862NV5.p8")
+    authorize_scopes = "email name"
+  }
 
-#   attribute_mapping = {
-#     name     = "name"
-#     email    = "email"
-#     username = "id"
-#   }
-# }
+  attribute_mapping = {
+    email_verified = "email_verified"
+    name           = "firstName"
+    email          = "email"
+    username       = "sub"
+  }
+}
