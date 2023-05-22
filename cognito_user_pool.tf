@@ -53,7 +53,6 @@ resource "aws_cognito_user_pool_client" "erp_client" {
 # vehicle admin client 
 resource "aws_cognito_user_pool_client" "vehicle_admin" {
   name                         = "vehicle_admin"
-  generate_secret              = true
   user_pool_id                 = aws_cognito_user_pool.default.id
   explicit_auth_flows          = ["ALLOW_REFRESH_TOKEN_AUTH", "ALLOW_USER_SRP_AUTH"]
   allowed_oauth_scopes         = ["email", "openid", "profile", "aws.cognito.signin.user.admin"]
