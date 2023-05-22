@@ -72,6 +72,23 @@ resource "aws_cognito_user_pool_client" "vehicle_admin" {
   ]
 }
 
+# event_bridge_connection client
+resource "aws_cognito_user_pool_client" "event_bridge_connection" {
+  name                         = "event_bridge_connection"
+  generate_secret              = true
+  explicit_auth_flows          = ["ALLOW_REFRESH_TOKEN_AUTH", "ALLOW_ADMIN_USER_PASSWORD_AUTH"]
+  user_pool_id                 = aws_cognito_user_pool.default.id
+  supported_identity_providers = ["COGNITO"]
+  allowed_oauth_scopes         = aws_cognito_resource_server.default.scope_identifiers
+  allowed_oauth_flows          = ["client_credentials"]
+
+  allowed_oauth_flows_user_pool_client = true
+
+  depends_on = [
+    aws_cognito_resource_server.default
+  ]
+}
+
 # domain
 resource "aws_cognito_user_pool_domain" "default" {
   domain       = "development-vehicle"
