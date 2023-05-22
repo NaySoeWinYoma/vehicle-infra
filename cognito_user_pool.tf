@@ -45,6 +45,8 @@ resource "aws_cognito_user_pool_client" "erp_client" {
   allowed_oauth_scopes         = aws_cognito_resource_server.default.scope_identifiers
   allowed_oauth_flows          = ["client_credentials"]
 
+  allowed_oauth_flows_user_pool_client = true
+
   depends_on = [
     aws_cognito_resource_server.default
   ]
@@ -60,6 +62,8 @@ resource "aws_cognito_user_pool_client" "vehicle_admin" {
   supported_identity_providers = ["COGNITO", "Google", "Facebook", "SignInWithApple"]
   callback_urls                = var.client_callback_urls
   logout_urls                  = var.client_logout_urls
+
+  allowed_oauth_flows_user_pool_client = true
 
   depends_on = [
     aws_cognito_identity_provider.google,
